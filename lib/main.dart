@@ -1,29 +1,11 @@
+import 'package:flame/flame.dart';
+import 'package:flame/game.dart';
+import 'package:flame_flappy_bird/flappy_bird_game.dart';
 import 'package:flutter/material.dart';
-
 void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
+  WidgetsFlutterBinding.ensureInitialized();
+  Flame.device.fullScreen();
+  Flame.device.setPortraitUpOnly();
+  FlappyBird game = FlappyBird();
+  runApp(GameWidget(game: game));
 }
