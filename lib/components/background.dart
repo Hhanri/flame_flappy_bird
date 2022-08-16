@@ -2,16 +2,16 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 
 class Background {
-  final Rect bgRect;
-  final Sprite bgSprite;
+  final Rect rect;
+  final Sprite sprite;
 
-  Background({required this.bgRect, required this.bgSprite});
+  Background({required this.rect, required this.sprite});
 
   void update(double t) {
 
   }
 
   void render(Canvas canvas) {
-    bgSprite.render(canvas, size: bgRect.size.toVector2());
+    sprite.renderRect(canvas, rect);
   }
 }
