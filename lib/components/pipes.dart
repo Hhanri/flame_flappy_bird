@@ -84,4 +84,8 @@ class Pipes {
     bottomHeadPipeSprite.renderRect(canvas, bottomHeadPipeRect);
     bottomBodyPipeSprite.renderRect(canvas, bottomBodyPipeRect);
   }
+
+  bool hasCollision(Rect rect) {
+    return (topBodyPipeRect.overlaps(rect) || topHeadPipeRect.overlaps(rect) ||  bottomBodyPipeRect.overlaps(rect) || bottomHeadPipeRect.overlaps(rect));
+  }
 }

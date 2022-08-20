@@ -30,6 +30,7 @@ class Bird {
       }
     );
     timer.start();
+
     rect = Rect.fromLTWH(50, screenSize.height / 2, 50, 35);
   }
 
@@ -41,9 +42,9 @@ class Bird {
   }
   void render(Canvas canvas) {
     canvas.save();
-    canvas.translate(50 + birdWidth/2, rect.bottom/2 - birdHeight/2);
-    canvas.rotate((4.9*time-5) * 0.2);
-    spritesList[spriteIndex].renderRect(canvas, Rect.fromLTWH(0, 0, 50, 35));
+    canvas.translate(50 + birdWidth/2, rect.bottom - birdHeight/2);
+    canvas.rotate((4.9*time-4) * 0.2);
+    spritesList[spriteIndex].renderRect(canvas, const Rect.fromLTWH(0, 0, 50, 35));
     canvas.restore();
 
   }

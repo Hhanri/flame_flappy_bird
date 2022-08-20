@@ -24,4 +24,8 @@ class Ground {
   void render(Canvas canvas) {
     sprite.renderRect(canvas, rect);
   }
+
+  bool hasCollision(Rect bird) {
+    return rect.overlaps(bird);
+  }
 }

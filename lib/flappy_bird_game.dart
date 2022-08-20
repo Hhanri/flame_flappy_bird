@@ -64,12 +64,31 @@ class FlappyBird extends Game with TapDetector {
     pipes.removeWhere((element) => element.isVisible == false);
 
     bird.update(dt);
+
+    gameOver();
   }
 
   void createGround() async {
     final Ground ground1 = Ground(leftPos: 0, screenSize: size.toRect());
     final Ground ground2 = Ground(leftPos: size.toRect().width, screenSize: size.toRect());
     groundList = [ground1, ground2];
+  }
+
+  void gameOver() {
+    pipes.forEach((element) {
+      if (element.hasCollision(bird.rect)) {
+        print("GAME OVER");
+      }
+    });
+    groundList.forEach((element) {
+      if (element.hasCollision(bird.rect)) {
+        print("GAME OVER");
+      }
+    });
+
+    if (bird.rect.top <= 0) {
+      print("CEILING");
+    }
   }
 
   @override
