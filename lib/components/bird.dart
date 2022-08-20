@@ -4,9 +4,7 @@ import 'package:flame/extensions.dart';
 class Bird {
   late Rect rect;
   final Rect screenSize;
-  final Image downFlap;
-  final Image midFlap;
-  final Image upFlap;
+
   late final List<Sprite> spritesList;
   late final Timer timer;
   int spriteIndex = 0;
@@ -14,7 +12,7 @@ class Bird {
 
   final double birdHeight = 35;
   final double birdWidth = 50;
-  Bird({required this.screenSize, required this.downFlap, required this.midFlap, required this.upFlap}) {
+  Bird({required this.screenSize, required Image downFlap, required Image midFlap, required Image upFlap}) {
 
     spritesList = [
       Sprite(downFlap),
@@ -51,5 +49,9 @@ class Bird {
 
   void onTap() {
     time = 0;
+  }
+
+  void dispose() {
+    timer.stop();
   }
 }

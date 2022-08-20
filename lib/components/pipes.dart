@@ -4,9 +4,6 @@ import 'package:flame/extensions.dart';
 import 'package:flame/sprite.dart';
 
 class Pipes {
-  final Image pipeBody;
-  final Image pipeHead;
-
   late Rect topBodyPipeRect;
   late Rect topHeadPipeRect;
   late final Sprite topBodyPipeSprite;
@@ -27,7 +24,7 @@ class Pipes {
 
   late final List<double> _pipeHeights;
 
-  Pipes({required this.screenSize, required this.pipeBody, required this.pipeHead}) {
+  Pipes({required this.screenSize, required Image pipeBody, required Image pipeHead}) {
     topBodyPipeSprite = Sprite(pipeBody);
     topHeadPipeSprite = Sprite(pipeHead);
     bottomBodyPipeSprite = Sprite(pipeBody);

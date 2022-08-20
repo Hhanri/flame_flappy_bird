@@ -4,25 +4,29 @@ import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame_flappy_bird/components/background.dart';
 import 'package:flame_flappy_bird/components/bird.dart';
+import 'package:flame_flappy_bird/components/game_over.dart';
 import 'package:flame_flappy_bird/components/ground.dart';
 import 'package:flame_flappy_bird/components/pipes.dart';
 
 class FlappyBird extends Game with TapDetector {
-  late final Background background;
+  late Background background;
   late List<Ground> groundList;
-  List<Pipes> pipes = [];
+  late List<Pipes> pipes;
   late Bird bird;
+  late GameOver gameOverScreen;
+  late Timer timer;
 
-  late final Timer timer;
+  bool isPlaying = false;
   @override
   Future<void> onLoad() async {
     //background initialization
-
     background = Background(rect: size.toRect());
+
     //ground initialization
     createGround();
 
     //pipes initialization
+    pipes = [];
     final Image pipeHead = await images.load("pipe_head.png");
     final Image pipeBody = await images.load("pipe_body.png");
     timer = Timer(
@@ -39,19 +43,35 @@ class FlappyBird extends Game with TapDetector {
     final Image midFlap = await images.load('midflap.png');
     final Image upFlap = await images.load('upflap.png');
     bird = Bird(screenSize: size.toRect(), downFlap: downFlap, midFlap: midFlap, upFlap: upFlap);
+
+    //game over screen initialization
+    final gameOverImage = await images.load("message.png");
+    gameOverScreen = GameOver(screenSize: size.toRect(), image: gameOverImage);
   }
 
   @override
   void render(Canvas canvas) {
     background.render(canvas);
-    pipes.forEach((element) {element.render(canvas);});
+    if (isPlaying) {
+      pipes.forEach((element) {element.render(canvas);});
+      bird.render(canvas);
+    } else {
+      gameOverScreen.render(canvas);
+    }
     groundList.forEach((element) {element.render(canvas);});
-    bird.render(canvas);
+
   }
 
   @override
   void update(double dt) {
-    timer.update(dt);
+    if (isPlaying) {
+      timer.update(dt);
+      //pipes movement
+      pipes.forEach((element) {element.update(dt);});
+      pipes.removeWhere((element) => element.isVisible == false);
+      bird.update(dt);
+      gameOver();
+    }
 
     //ground movement
     groundList.forEach((element) {element.update(dt);});
@@ -59,13 +79,6 @@ class FlappyBird extends Game with TapDetector {
     if (groundList.length < 2) {
       createGround();
     }
-    //pipes movement
-    pipes.forEach((element) {element.update(dt);});
-    pipes.removeWhere((element) => element.isVisible == false);
-
-    bird.update(dt);
-
-    gameOver();
   }
 
   void createGround() async {
@@ -77,23 +90,34 @@ class FlappyBird extends Game with TapDetector {
   void gameOver() {
     pipes.forEach((element) {
       if (element.hasCollision(bird.rect)) {
-        print("GAME OVER");
+        reset();
       }
     });
     groundList.forEach((element) {
       if (element.hasCollision(bird.rect)) {
-        print("GAME OVER");
+        reset();
       }
     });
 
     if (bird.rect.top <= 0) {
-      print("CEILING");
+      reset();
     }
   }
 
   @override
   void onTap() {
     super.onTap();
-    bird.onTap();
+    if (isPlaying) {
+      bird.onTap();
+    } else {
+      isPlaying = true;
+    }
+  }
+
+  void reset() {
+    isPlaying = false;
+    timer.stop();
+    bird.dispose();
+    onLoad();
   }
 }
