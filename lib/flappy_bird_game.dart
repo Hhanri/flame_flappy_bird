@@ -1,14 +1,18 @@
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
+import 'package:flame/input.dart';
 import 'package:flame_flappy_bird/components/background.dart';
+import 'package:flame_flappy_bird/components/bird.dart';
 import 'package:flame_flappy_bird/components/ground.dart';
 import 'package:flame_flappy_bird/components/pipes.dart';
 
-class FlappyBird extends Game {
+class FlappyBird extends Game with TapDetector {
   late final Background background;
   late List<Ground> groundList;
   List<Pipes> pipes = [];
+  late Bird bird;
+
   late final Timer timer;
   @override
   Future<void> onLoad() async {
@@ -22,13 +26,19 @@ class FlappyBird extends Game {
     final Image pipeHead = await images.load("pipe_head.png");
     final Image pipeBody = await images.load("pipe_body.png");
     timer = Timer(
-      2,
+      3,
       repeat: true,
       onTick: () {
         final newPipes = Pipes(screenSize: size.toRect(), pipeBody: pipeBody, pipeHead: pipeHead);
         pipes.add(newPipes);
       }
     );
+
+    //bird initialization
+    final Image downFlap = await images.load('downflap.png');
+    final Image midFlap = await images.load('midflap.png');
+    final Image upFlap = await images.load('upflap.png');
+    bird = Bird(screenSize: size.toRect(), downFlap: downFlap, midFlap: midFlap, upFlap: upFlap);
   }
 
   @override
@@ -36,6 +46,7 @@ class FlappyBird extends Game {
     background.render(canvas);
     pipes.forEach((element) {element.render(canvas);});
     groundList.forEach((element) {element.render(canvas);});
+    bird.render(canvas);
   }
 
   @override
@@ -52,11 +63,18 @@ class FlappyBird extends Game {
     pipes.forEach((element) {element.update(dt);});
     pipes.removeWhere((element) => element.isVisible == false);
 
+    bird.update(dt);
   }
 
   void createGround() async {
     final Ground ground1 = Ground(leftPos: 0, screenSize: size.toRect());
     final Ground ground2 = Ground(leftPos: size.toRect().width, screenSize: size.toRect());
     groundList = [ground1, ground2];
+  }
+
+  @override
+  void onTap() {
+    super.onTap();
+    bird.onTap();
   }
 }
