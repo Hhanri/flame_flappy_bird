@@ -21,6 +21,7 @@ class Pipes {
   final double _pipeSpeed = -130;
 
   bool isVisible = true;
+  bool canScore = true;
 
   late final List<double> _pipeHeights;
 
@@ -85,4 +86,6 @@ class Pipes {
   bool hasCollision(Rect rect) {
     return (topBodyPipeRect.overlaps(rect) || topHeadPipeRect.overlaps(rect) ||  bottomBodyPipeRect.overlaps(rect) || bottomHeadPipeRect.overlaps(rect));
   }
+
+  void disableScore() => canScore = false;
 }

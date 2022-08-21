@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
+import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame_audio/flame_audio.dart';
@@ -8,7 +9,9 @@ import 'package:flame_flappy_bird/components/bird.dart';
 import 'package:flame_flappy_bird/components/game_over.dart';
 import 'package:flame_flappy_bird/components/ground.dart';
 import 'package:flame_flappy_bird/components/pipes.dart';
+import 'package:flutter/material.dart' show Colors;
 
+import 'package:flutter/painting.dart';
 class FlappyBird extends Game with TapDetector {
   late Background background;
   late List<Ground> groundList;
@@ -16,10 +19,21 @@ class FlappyBird extends Game with TapDetector {
   late Bird bird;
   late GameOver gameOverScreen;
   late Timer timer;
+  int score = 0;
+  late TextPaint textScore;
 
   bool isPlaying = false;
   @override
   Future<void> onLoad() async {
+    //
+    textScore = TextPaint(
+      style: const  TextStyle(
+        fontSize: 45.0,
+        fontFamily: 'flappy_font',
+        color: Colors.white
+      ),
+    );
+
     //background initialization
     background = Background(rect: size.toRect());
 
@@ -56,11 +70,11 @@ class FlappyBird extends Game with TapDetector {
     if (isPlaying) {
       pipes.forEach((element) {element.render(canvas);});
       bird.render(canvas);
+      textScore.render(canvas, score.toString(), Vector2(size.toRect().width/2, 100));
     } else {
       gameOverScreen.render(canvas);
     }
     groundList.forEach((element) {element.render(canvas);});
-
   }
 
   @override
@@ -71,6 +85,7 @@ class FlappyBird extends Game with TapDetector {
       pipes.forEach((element) {element.update(dt);});
       pipes.removeWhere((element) => element.isVisible == false);
       bird.update(dt);
+      updateScore();
       gameOver();
     }
 
@@ -120,6 +135,17 @@ class FlappyBird extends Game with TapDetector {
     isPlaying = false;
     timer.stop();
     bird.dispose();
+    score = 0;
     onLoad();
+  }
+
+  void updateScore() {
+    pipes.forEach((element) {
+      if ((element.canScore) && bird.rect.right >= element.topBodyPipeRect.left + element.topBodyPipeRect.width/2) {
+        score++;
+        FlameAudio.play("point.wav");
+        element.disableScore();
+      }
+    });
   }
 }
