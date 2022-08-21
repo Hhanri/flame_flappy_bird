@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
+import 'package:flame_audio/flame_audio.dart';
 
 class Bird {
   late Rect rect;
@@ -49,6 +50,7 @@ class Bird {
 
   void onTap() {
     time = 0;
+    FlameAudio.play("wing.wav");
   }
 
   void dispose() {

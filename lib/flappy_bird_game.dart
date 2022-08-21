@@ -2,6 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_flappy_bird/components/background.dart';
 import 'package:flame_flappy_bird/components/bird.dart';
 import 'package:flame_flappy_bird/components/game_over.dart';
@@ -115,6 +116,7 @@ class FlappyBird extends Game with TapDetector {
   }
 
   void reset() {
+    FlameAudio.play("hit.wav");
     isPlaying = false;
     timer.stop();
     bird.dispose();
