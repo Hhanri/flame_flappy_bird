@@ -1,6 +1,5 @@
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame_audio/flame_audio.dart';
@@ -12,6 +11,7 @@ import 'package:flame_flappy_bird/components/pipes.dart';
 import 'package:flutter/material.dart' show Colors;
 
 import 'package:flutter/painting.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class FlappyBird extends Game with TapDetector {
   late Background background;
   late List<Ground> groundList;
@@ -20,6 +20,7 @@ class FlappyBird extends Game with TapDetector {
   late GameOver gameOverScreen;
   late Timer timer;
   int score = 0;
+  int bestScore = 0;
   late TextPaint textScore;
 
   bool isPlaying = false;
@@ -60,8 +61,10 @@ class FlappyBird extends Game with TapDetector {
     bird = Bird(screenSize: size.toRect(), downFlap: downFlap, midFlap: midFlap, upFlap: upFlap);
 
     //game over screen initialization
+    final prefs = await SharedPreferences.getInstance();
+    bestScore = prefs.getInt("bestScore") ?? 0;
     final gameOverImage = await images.load("message.png");
-    gameOverScreen = GameOver(screenSize: size.toRect(), image: gameOverImage);
+    gameOverScreen = GameOver(screenSize: size.toRect(), image: gameOverImage, score: score, bestScore: bestScore);
   }
 
   @override
@@ -126,16 +129,17 @@ class FlappyBird extends Game with TapDetector {
     if (isPlaying) {
       bird.onTap();
     } else {
+      score = 0;
       isPlaying = true;
     }
   }
 
-  void reset() {
+  void reset() async {
     FlameAudio.play("hit.wav");
     isPlaying = false;
+    await saveBestScore();
     timer.stop();
     bird.dispose();
-    score = 0;
     onLoad();
   }
 
@@ -145,7 +149,13 @@ class FlappyBird extends Game with TapDetector {
         score++;
         FlameAudio.play("point.wav");
         element.disableScore();
+        if (score > bestScore) bestScore = score;
       }
     });
+  }
+
+  Future<void> saveBestScore() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt("bestScore", bestScore);
   }
 }
